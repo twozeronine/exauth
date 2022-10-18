@@ -7,6 +7,8 @@ defmodule ExauthWeb.Router do
 
   scope "/api", ExauthWeb do
     pipe_through :api
+
+    get "/ping", AuthController, :ping
   end
 
   # Enables LiveDashboard only for development
