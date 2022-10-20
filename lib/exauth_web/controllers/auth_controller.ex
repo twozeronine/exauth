@@ -1,8 +1,11 @@
 defmodule ExauthWeb.AuthController do
   use ExauthWeb, :controller
+  import Plug.Conn
+  alias Exauth.Repo
   alias Exauth.Accounts
   alias Exauth.Accounts.User
   alias ExauthWeb.JWTToken
+  alias Exauth.AuthTokens.AuthToken
 
   def ping(conn, _params) do
     conn
@@ -42,6 +45,27 @@ defmodule ExauthWeb.AuthController do
 
   def get(conn, _param) do
     conn |> render("data.json", %{data: conn.assigns.current_user})
+  end
+
+  def delete(conn, _params) do
+    case Ecto.build_assoc(conn.assigns.current_user, :auth_tokens, %{token: get_token(conn)})
+         |> Repo.insert() do
+      {:ok, %AuthToken{}} ->
+        conn |> render("ack.json", %{success: true, message: "Logged Out"})
+
+      _ ->
+        conn |> render("error.json", %{error: "Internal Server Error"})
+    end
+  end
+
+  defp get_token(conn) do
+    bearer = get_req_header(conn, "authorization") |> List.first()
+
+    if bearer == nil do
+      ""
+    else
+      token = bearer |> String.split(" ") |> List.last()
+    end
   end
 
   defp format_changeset_errors(%Ecto.Changeset{} = changeset) do
