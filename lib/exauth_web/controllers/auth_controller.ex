@@ -40,6 +40,10 @@ defmodule ExauthWeb.AuthController do
     end
   end
 
+  def get(conn, _param) do
+    conn |> render("data.json", %{data: conn.assigns.current_user})
+  end
+
   defp format_changeset_errors(%Ecto.Changeset{} = changeset) do
     errors =
       Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->

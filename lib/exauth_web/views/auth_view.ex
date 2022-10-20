@@ -9,4 +9,8 @@ defmodule ExauthWeb.AuthView do
 
   def render("errors.json", %{errors: errors}), do: %{success: false, errors: errors}
   def render("error.json", %{error: error}), do: %{success: false, error: error}
+
+  def render("data.json", %{data: data}) do
+    %{success: true, data: data}
+  end
 end
